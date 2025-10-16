@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dr. Snark - The Ultimate Rude AI Therapist</title>
+<style>
+body { font-family: Arial, sans-serif; background: #1b1b1b; color: #eee; display: flex; justify-content: center; align-items: center; height: 100vh; }
+#chat { width: 450px; background: #222; padding: 20px; border-radius: 15px; box-shadow: 0 0 20px #000; }
+#messages { height: 350px; overflow-y: auto; border: 1px solid #444; padding: 10px; margin-bottom: 10px; border-radius: 10px; background: #111; }
+.user { color: #0ff; margin-bottom: 5px; }
+.bot { color: #f55; margin-bottom: 5px; font-weight: bold; }
+input, button { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: none; font-size: 14px; }
+button { background: #f55; color: #fff; cursor: pointer; font-weight: bold; }
+button:hover { background: #ff3333; }
+</style>
+</head>
+<body>
+<div id="chat">
+  <div id="messages"></div>
+  <input id="input" placeholder="Confess your pathetic problems here..." />
+  <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+async function sendMessage() {
+  const input = document.getElementById('input');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  const messages = document.getElementById('messages');
+  messages.innerHTML += `<div class="user">You: ${msg}</div>`;
+  input.value = '';
+
+  const res = await fetch('/.netlify/functions/dr-snark', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: msg })
+  });
+  const data = await res.json();
+  messages.innerHTML += `<div class="bot">Dr. Snark: ${data.reply}</div>`;
+  messages.scrollTop = messages.scrollHeight;
+}
+</script>
+</body>
+</html>
